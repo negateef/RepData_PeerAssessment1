@@ -147,3 +147,37 @@ print(medianStepsWithoutNA)
 As we can see from the mean and median numbers - they don't change much. As well as the diagram, that remained almost the same.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Now we'll explore the activity comparing weekdays and weekends.
+First of all, let's add new variable to our dataset, containing "weekday" or "weekend" depending on date:
+
+
+```r
+data <- dateAndStepsWithoutNA
+library(chron)
+dayType <- as.factor(apply(data, 1, function(x) {
+  if (is.weekend(as.Date(x[names(x) == "date"])))
+    return ("weekend")
+  else
+    return ("weekday")
+}))
+
+data$dayType <- dayType 
+data$interval <- activity$interval
+
+weekends <- data[as.character(data$dayType) == "weekend", ]
+weekdays <- data[as.character(data$dayType) == "weekday", ]
+
+par(mfrow = c(2, 1), mar = c(2, 2, 2, 2))
+
+makePlot <- function(data, xlab, ylab, main) {
+  meanStepsByInterval <- aggregate(. ~ interval, data, mean)
+  plot(meanStepsByInterval$interval, meanStepsByInterval$steps, 
+    type = "l", xlab = xlab, ylab = ylab, main = main)
+}
+
+makePlot(weekends, "Interval", "Mean number of steps", "Average number of steps taken by the 5-minute interval")
+makePlot(weekdays, "Interval", "Mean number of steps", "")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
